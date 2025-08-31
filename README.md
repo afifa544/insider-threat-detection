@@ -1,34 +1,25 @@
-# Insider Threat Detection System
+# 🔍 Insider Threat Detection System
 
-A machine learning system to detect potential insider threats using behavioral analytics.
+A machine learning-based system for detecting potential insider threats using behavioral analytics.
 
 ## Features
-- Real-time user behavior monitoring
-- Anomaly detection using machine learning
-- Interactive Streamlit dashboard
-- Risk scoring (0-1 probability)
-- Automatic alert system
-- Tor network usage detection
 
-## Technologies Used
-- Python
-- Scikit-Learn
-- Streamlit
-- Pandas & NumPy
-- Matplotlib/Seaborn
+- **Real-time Monitoring**: Continuous user behavior analysis
+- **Machine Learning**: Isolation Forest algorithm for anomaly detection
+- **Interactive Dashboard**: Streamlit-based visualization
+- **Risk Scoring**: 0-1 risk probability for each user
+- **Alert System**: Automatic anomaly detection and reporting
+
+## Tech Stack
+
+- Python 🐍
+- Scikit-Learn 🤖
+- Streamlit 📊
+- Pandas & NumPy 📈
 
 ## Installation
+
 ```bash
+git clone https://github.com/your-username/insider-threat-detection.git
+cd insider-threat-detection
 pip install -r requirements.txt
-streamlit run dashboard/lightweight_app.py
-#PROJECT STRUCTURE
-insider-threat-detection/
-├── dashboard/
-│   ├── lightweight_app.py
-│   └── email_alerts.py
-├── data/
-├── src/
-│   └── advanced_models.py
-├── requirements.txt
-├── create_json.py
-└── README.md
