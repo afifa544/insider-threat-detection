@@ -1,0 +1,36 @@
+# Core Data Science & ML
+scikit-learn==1.5.1
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.13.0
+
+# Dashboard & Visualization
+streamlit==1.37.1
+matplotlib==3.9.2
+seaborn==0.13.2
+plotly==5.22.0
+
+# Data Processing & Utilities
+python-dateutil==2.9.0
+pytz==2024.1
+tzdata==2024.1
+
+# Optional (for advanced features)
+tensorflow==2.16.1
+keras==3.3.3
+xgboost==2.0.3
+lightgbm==4.4.0
+
+# Web & API (if needed)
+requests==2.32.3
+flask==3.0.3
+
+# Code Quality & Development
+black==24.4.2
+pylint==3.1.0
+autopep8==2.0.4
+
+# Other Utilities
+pyyaml==6.0.1
+python-dotenv==1.0.1
+tqdm==4.66.4
