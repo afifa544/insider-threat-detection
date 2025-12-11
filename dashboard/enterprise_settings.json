@@ -1,0 +1,27 @@
+{
+  "system": {
+    "auto_refresh": true,
+    "refresh_interval": 60,
+    "data_retention_days": 90,
+    "session_timeout": 30,
+    "max_login_attempts": 5,
+    "mfa_required": true
+  },
+  "alerts": {
+    "email_enabled": true,
+    "slack_enabled": false,
+    "sms_enabled": false,
+    "critical_threshold": 80,
+    "high_threshold": 60
+  },
+  "elk": {
+    "elk_host": "http://localhost:9200",
+    "kibana_url": "http://localhost:5601",
+    "indices": [
+      "threat-events-*",
+      "user-activities-*"
+    ],
+    "auto_sync": true,
+    "sync_interval": 300
+  }
+}

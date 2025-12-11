@@ -1,0 +1,119 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: threat-postgres
+    environment:
+      POSTGRES_DB: threatdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - threat-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: threat-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - threat-network
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: threat-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - threat-network
+
+  # Logstash
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    container_name: threat-logstash
+    volumes:
+      - ./config/logstash:/usr/share/logstash/pipeline
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+    networks:
+      - threat-network
+    depends_on:
+      - elasticsearch
+
+  # Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: threat-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - threat-network
+    depends_on:
+      - elasticsearch
+
+  # FastAPI Backend
+  backend:
+    build: ./backend
+    container_name: threat-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=postgresql://admin:admin123@postgres:5432/threatdb
+      - REDIS_URL=redis://redis:6379
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+    networks:
+      - threat-network
+
+  # Streamlit Dashboard
+  dashboard:
+    build: ./dashboard
+    container_name: threat-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./dashboard:/app
+      - ./data:/app/data
+    environment:
+      - API_URL=http://backend:8000
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - backend
+    networks:
+      - threat-network
+
+networks:
+  threat-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  elasticsearch_data:

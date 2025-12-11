@@ -1,0 +1,21 @@
+[
+  {
+    "activity_id": "ACT-TEST-120815",
+    "user_id": "user49",
+    "activity_type": "Login",
+    "resource": "Web App",
+    "risk_score": 5,
+    "ip_address": "192.168.157.164",
+    "department": "Operations"
+  },
+  {
+    "user_id": "user358",
+    "activity_type": "File Access",
+    "resource": "Web App",
+    "risk_score": 10,
+    "ip_address": "192.168.232.71",
+    "department": "Sales",
+    "activity_id": "ACT-20251206-124047",
+    "timestamp": "2025-12-06T12:40:47.249905"
+  }
+]

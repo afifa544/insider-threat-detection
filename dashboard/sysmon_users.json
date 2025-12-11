@@ -1,0 +1,51 @@
+{
+  "users": [
+    {
+      "id": "nt_authority_network_service",
+      "username": "NETWORK SERVICE",
+      "domain": "NT AUTHORITY",
+      "full_name": "NT AUTHORITY\\NETWORK SERVICE",
+      "department": "IT/System",
+      "role": "System Service",
+      "risk_level": "low",
+      "risk_score": 0.2,
+      "threat_count": 0,
+      "is_service_account": true,
+      "process_count": 1,
+      "last_seen": "24-08-2025 20:36:21"
+    },
+    {
+      "id": "nt_authority_system",
+      "username": "SYSTEM",
+      "domain": "NT AUTHORITY",
+      "full_name": "NT AUTHORITY\\SYSTEM",
+      "department": "System Services",
+      "role": "System Account",
+      "risk_level": "low",
+      "risk_score": 0.2,
+      "threat_count": 0,
+      "is_service_account": true,
+      "process_count": 4,
+      "last_seen": "24-08-2025 20:36:27"
+    },
+    {
+      "id": "desktop-u5f5t3l_dell",
+      "username": "DELL",
+      "domain": "DESKTOP-U5F5T3L",
+      "full_name": "DESKTOP-U5F5T3L\\DELL",
+      "department": "Engineering/Development",
+      "role": "Developer",
+      "risk_level": "low",
+      "risk_score": 0.1,
+      "threat_count": 0,
+      "is_service_account": false,
+      "process_count": 12,
+      "last_seen": "24-08-2025 20:36:15"
+    }
+  ],
+  "threats": [],
+  "total_users": 3,
+  "total_threats": 0,
+  "extracted_at": "2025-12-05T01:19:43.860787",
+  "source_file": "uploaded_sysmon.csv"
+}

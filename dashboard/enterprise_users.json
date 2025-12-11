@@ -1,0 +1,53 @@
+[
+  {
+    "id": "ADM001",
+    "username": "admin",
+    "email": "admin@globalcorp.com",
+    "password_hash": "e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7",
+    "role": "Administrator",
+    "department": "IT Security",
+    "permissions": [
+      "all"
+    ],
+    "status": "active",
+    "created_at": "2025-12-11T15:24:47.352422",
+    "last_login": "2025-12-11T15:43:14.874706",
+    "mfa_enabled": true,
+    "session_timeout": 30
+  },
+  {
+    "id": "SEC001",
+    "username": "security_analyst",
+    "email": "security@globalcorp.com",
+    "password_hash": "fbab16f6afe4a33268790081b61fe195e302f7ebea23ca0e0ba63a66ddfe8230",
+    "role": "Security Analyst",
+    "department": "IT Security",
+    "permissions": [
+      "view",
+      "analyze",
+      "alert",
+      "report"
+    ],
+    "status": "active",
+    "created_at": "2025-12-11T15:24:47.352422",
+    "last_login": null,
+    "mfa_enabled": true,
+    "session_timeout": 30
+  },
+  {
+    "id": "USR003",
+    "username": "john",
+    "email": "look_back1@live.com",
+    "password_hash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+    "role": "Viewer",
+    "department": "IT",
+    "permissions": [
+      "view"
+    ],
+    "status": "active",
+    "created_at": "2025-12-11T15:44:58.741138",
+    "last_login": null,
+    "mfa_enabled": true,
+    "session_timeout": 30
+  }
+]

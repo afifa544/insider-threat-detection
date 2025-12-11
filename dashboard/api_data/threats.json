@@ -1,0 +1,56 @@
+[
+  {
+    "id": "THREAT-20251206-002723",
+    "type": "DDoS",
+    "severity": "Critical",
+    "source": "enterprise_platform",
+    "description": "Sample threat for testing API storage",
+    "timestamp": "2025-12-06T00:27:23.850785"
+  },
+  {
+    "id": "THREAT-20251206-002731",
+    "type": "DDoS",
+    "severity": "High",
+    "source": "enterprise_platform",
+    "description": "Sample threat for testing API storage",
+    "timestamp": "2025-12-06T00:27:31.465234"
+  },
+  {
+    "test": true,
+    "message": "API test",
+    "timestamp": "2025-12-06T00:27:33.242699",
+    "source": "enterprise_platform"
+  },
+  {
+    "id": "THREAT-20251206-002737",
+    "type": "Malware",
+    "severity": "Medium",
+    "source": "enterprise_platform",
+    "description": "Sample threat for testing API storage",
+    "timestamp": "2025-12-06T00:27:37.397876"
+  },
+  {
+    "id": "THREAT-20251206-002806",
+    "type": "DDoS",
+    "severity": "High",
+    "source": "enterprise_platform",
+    "description": "Sample threat for testing API storage",
+    "timestamp": "2025-12-06T00:28:06.260813"
+  },
+  {
+    "id": "THREAT-20251206-002814",
+    "type": "DDoS",
+    "severity": "Critical",
+    "source": "enterprise_platform",
+    "description": "Sample threat for testing API storage",
+    "timestamp": "2025-12-06T00:28:14.883243"
+  },
+  {
+    "id": "THREAT-20251206-115822",
+    "type": "DDoS",
+    "severity": "High",
+    "source": "enterprise_platform",
+    "description": "Sample threat for testing API storage",
+    "timestamp": "2025-12-06T11:58:22.836512"
+  }
+]

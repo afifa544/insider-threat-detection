@@ -1,0 +1,16 @@
+{
+  "kibana_url": "http://localhost:5601",
+  "elasticsearch_url": "http://localhost:9200",
+  "api_key": "",
+  "username": "elastic",
+  "password": "",
+  "dashboards": {
+    "security_overview": "security-overview-dashboard",
+    "user_activity": "user-activity-monitoring",
+    "threat_detection": "threat-detection-alerts",
+    "compliance": "compliance-dashboard",
+    "network_traffic": "network-traffic-analysis"
+  },
+  "auto_refresh": true,
+  "refresh_interval": 30
+}

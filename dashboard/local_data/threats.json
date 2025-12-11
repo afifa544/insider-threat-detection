@@ -1,0 +1,22 @@
+[
+  {
+    "threat_id": "THREAT-TEST-120815",
+    "threat_type": "DDoS",
+    "severity": "High",
+    "source_ip": "10.0.12.28",
+    "description": "Test threat generated for demonstration",
+    "user_affected": "user8",
+    "department": "HR"
+  },
+  {
+    "threat_type": "Malware",
+    "severity": "Medium",
+    "description": "Test threat generated for demonstration",
+    "source_ip": "10.0.84.202",
+    "user_affected": "user331",
+    "department": "Operations",
+    "status": "New",
+    "threat_id": "THREAT-20251206-124047",
+    "timestamp": "2025-12-06T12:40:47.244014"
+  }
+]
