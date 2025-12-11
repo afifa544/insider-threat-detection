@@ -1,7 +1,3 @@
-Ah! So you **do** have a dashboard and it's a **Streamlit app**. Now we're getting somewhere! Here's the proper README:
-
----
-
 # Insider Threat Detection Dashboard
 
 ## 🎯 Features
