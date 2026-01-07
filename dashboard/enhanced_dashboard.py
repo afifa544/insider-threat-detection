@@ -1,4 +1,4 @@
-# dashboard/enterprise_dashboard.py - ENHANCED VERSION WITH REPORT GENERATION
+# dashboard/enterprise_dashboard.py - FIXED VERSION
 
 import streamlit as st
 import pandas as pd
@@ -78,10 +78,10 @@ st.markdown("""
         background: linear-gradient(90deg, rgba(0, 255, 65, 0.1) 0%, rgba(0, 255, 65, 0.05) 100%);
         padding: 2rem;
         border-radius: 10px;
+        border: 2px solid #00ff41;
         color: #00ff41;
         text-align: center;
         margin-bottom: 2rem;
-        border: 2px solid #00ff41;
         box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
     }
     
@@ -259,8 +259,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================
-# LOGO LOADING FUNCTION
+# FIXED LOGO LOADING FUNCTION
 # ============================================
+
 def create_project_showcase():
     """VTU Project Showcase"""
     st.header("🎓 VTU FINAL YEAR PROJECT")
@@ -288,20 +289,32 @@ def create_project_showcase():
         """)
 
 def load_logo():
-    """Load logo image and convert to base64"""
+    """Load logo image and convert to base64 - FIXED VERSION"""
     import os
     
-    # Get the directory where THIS Python file is located
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    logo_path = os.path.join(current_dir, "logo.jpeg")
-    
-    if os.path.exists(logo_path):
-        try:
-            with open(logo_path, "rb") as img_file:
-                return base64.b64encode(img_file.read()).decode()
-        except:
-            return None
-    return None
+    try:
+        # Try multiple possible locations
+        possible_paths = [
+            "logo.jpeg",  # Current directory
+            "./logo.jpeg",  # Current directory
+            "dashboard/logo.jpeg",  # Dashboard folder
+            "./dashboard/logo.jpeg",  # Dashboard folder
+            os.path.join(os.path.dirname(__file__), "logo.jpeg"),  # Same directory as script
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.jpeg"),
+        ]
+        
+        for logo_path in possible_paths:
+            if os.path.exists(logo_path):
+                with open(logo_path, "rb") as img_file:
+                    return base64.b64encode(img_file.read()).decode()
+        
+        # If no logo found, create a placeholder
+        print("⚠️ Logo not found. Using placeholder.")
+        return None
+        
+    except Exception as e:
+        print(f"⚠️ Logo loading error: {str(e)}")
+        return None
 
 # Load logo once and store in session state
 if 'logo_base64' not in st.session_state:
@@ -315,11 +328,11 @@ EMAIL_CONFIG = {
     "enabled": True,
     "smtp_server": "smtp.gmail.com",
     "smtp_port": 587,
-    "smtp_username": "bushrafatima.vtu@gmail.com",
-    "smtp_password": "zloe ckpa ctba dtij",
+    "smtp_username": "taskeenafifa934@gmail.com",
+    "smtp_password": "rkzi jjpi yydy ldhc",
     "sender_email": "alerts@insiderguard.com",
     "sender_name": "INSIDER GUARD Alert System",
-    "recipients": ["bushrafatima.vtu@gmail.com"],
+    "recipients": ["taskeenafifa934@gmail.com"],
     "send_immediate_alerts": True,
     "send_daily_digest": True,
     "send_weekly_report": False,
@@ -800,11 +813,11 @@ def get_database_stats():
         return {}
 
 # ============================================
-# EMAIL ALERT FUNCTIONS
+# EMAIL ALERT FUNCTIONS - WITH TIMEOUT FIX
 # ============================================
 
 def send_email_alert(subject, body, recipients=None, html=True):
-    """Send email alert using SMTP"""
+    """Send email alert using SMTP - WITH TIMEOUT FIX"""
     if not EMAIL_CONFIG["enabled"]:
         return {"success": False, "message": "Email alerts disabled"}
     
@@ -812,6 +825,10 @@ def send_email_alert(subject, body, recipients=None, html=True):
         import smtplib
         from email.mime.text import MIMEText
         from email.mime.multipart import MIMEMultipart
+        import socket  # ADDED FOR TIMEOUT
+        
+        # ADD TIMEOUT SETTING
+        socket.setdefaulttimeout(10)
         
         # Get recipient list
         if recipients is None:
@@ -1338,6 +1355,10 @@ class InsiderThreatDashboard:
             st.session_state.current_tab = 'dashboard'
         if 'auto_alert_started' not in st.session_state:
             st.session_state.auto_alert_started = False
+        if 'selected_threat' not in st.session_state:  # ADDED FOR TAKE ACTION BUTTON
+            st.session_state.selected_threat = None
+        if 'report_type' not in st.session_state:  # ADDED FOR REPORT BUTTONS
+            st.session_state.report_type = None
         
         # Start auto-alert system if not already started
         if EMAIL_CONFIG["enabled"] and not st.session_state.auto_alert_started:
@@ -1577,16 +1598,23 @@ class InsiderThreatDashboard:
                 """
                 st.markdown(logo_html, unsafe_allow_html=True)
             else:
-                st.markdown(f"""
-                <div style="margin-bottom: 15px;">
-                    <h1 style="color: #00ff41; margin: 0; font-size: 28px; font-family: 'Courier New', monospace;">
-                        🛡️ {ENTERPRISE_CONFIG["company_name"]}
-                    </h1>
-                    <p style="color: rgba(0, 255, 65, 0.8); margin: 5px 0 0 0; font-size: 14px;">
-                        Advanced Threat Intelligence & Reporting Platform
-                    </p>
+                # Use emoji placeholder if logo not found
+                logo_html = """
+                <div class="logo-container">
+                    <div class="circular-logo">
+                        <div style="font-size: 32px; color: #00ff41;">🛡️</div>
+                    </div>
+                    <div>
+                        <h1 style="color: #00ff41; margin: 0; font-size: 28px; font-family: 'Courier New', monospace;">
+                            INSIDER GUARD
+                        </h1>
+                        <p style="color: rgba(0, 255, 65, 0.8); margin: 5px 0 0 0; font-size: 14px;">
+                            Advanced Threat Intelligence Platform • Defense Beyond Monitoring
+                        </p>
+                    </div>
                 </div>
-                """, unsafe_allow_html=True)
+                """
+                st.markdown(logo_html, unsafe_allow_html=True)
             
             # Status bar using Streamlit columns (NO HTML)
             st.markdown('<div class="status-bar">', unsafe_allow_html=True)
@@ -1710,8 +1738,34 @@ class InsiderThreatDashboard:
                 """
                 st.markdown(logo_html, unsafe_allow_html=True)
             else:
-                st.markdown("### INSIDER GUARD")
-                st.markdown("*Defense Beyond Monitoring*")
+                # Use emoji placeholder
+                logo_html = """
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="
+                        background: linear-gradient(135deg, rgba(0, 255, 65, 0.2) 0%, rgba(0, 255, 65, 0.1) 100%);
+                        padding: 10px;
+                        border-radius: 50%;
+                        border: 2px solid #00ff41;
+                        display: inline-block;
+                        margin: 0 auto;
+                        width: 100px;
+                        height: 100px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+                    ">
+                        <div style="font-size: 48px; color: #00ff41;">🛡️</div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <h3 style="color: #00ff41; margin: 5px 0; font-family: 'Courier New', monospace; font-size: 16px;">INSIDER GUARD</h3>
+                        <p style="color: #00ff41; margin: 0; font-size: 10px; font-family: 'Courier New', monospace; opacity: 0.8;">
+                            Defense Beyond Monitoring
+                        </p>
+                    </div>
+                </div>
+                """
+                st.markdown(logo_html, unsafe_allow_html=True)
             
             st.markdown("---")
             
@@ -1733,7 +1787,7 @@ class InsiderThreatDashboard:
             
             tabs = [
                 {"icon": "📊", "name": "Dashboard", "key": "dashboard"},
-                {"icon": "🌐", "name": "ELK Integration", "key": "elk"},  # ADD THIS LINE
+                {"icon": "🌐", "name": "ELK Integration", "key": "elk"},
                 {"icon": "🔍", "name": "Threat Analysis", "key": "analysis"},
                 {"icon": "📡", "name": "Sysmon Logs", "key": "sysmon"},
                 {"icon": "📋", "name": "Reports", "key": "reports"},
@@ -1849,7 +1903,7 @@ class InsiderThreatDashboard:
                 """)
     
     def create_dashboard_tab(self):
-        """Create enhanced dashboard tab"""
+        """Create enhanced dashboard tab with functional Take Action buttons"""
         st.header("📊 EXECUTIVE DASHBOARD")
         
         if st.session_state.threat_data is None:
@@ -1882,7 +1936,7 @@ class InsiderThreatDashboard:
         
         with col1:
             st.subheader("📊 Threat Distribution")
-            severity_counts = df['severity'].value_counts().reset_index()
+            severity_counts = df['severity'].value_counts().resetindex()
             severity_counts.columns = ['Severity', 'Count']
             
             fig = px.pie(severity_counts, values='Count', names='Severity',
@@ -1937,7 +1991,7 @@ class InsiderThreatDashboard:
         dept_cols = st.columns(2)
         
         with dept_cols[0]:
-            dept_counts = df['department'].value_counts().reset_index()
+            dept_counts = df['department'].value_counts().resetindex()
             dept_counts.columns = ['Department', 'Count']
             
             fig = px.bar(dept_counts, x='Department', y='Count',
@@ -1949,7 +2003,7 @@ class InsiderThreatDashboard:
             dept_risk = df.groupby('department').agg({
                 'risk_score': 'mean',
                 'id': 'count'
-            }).rename(columns={'id': 'threat_count'}).reset_index()
+            }).rename(columns={'id': 'threat_count'}).resetindex()
             
             fig = px.scatter(dept_risk, x='threat_count', y='risk_score',
                             size='threat_count', color='department',
@@ -1957,7 +2011,7 @@ class InsiderThreatDashboard:
                             title="Department Risk vs Threat Count")
             st.plotly_chart(fig, use_container_width=True)
         
-        # Recent Threats with Actions
+        # Recent Threats with Functional Actions
         st.subheader("🚨 RECENT THREATS")
         
         recent_threats = df.sort_values('timestamp', ascending=False).head(8)
@@ -1984,8 +2038,146 @@ class InsiderThreatDashboard:
                 """, unsafe_allow_html=True)
             
             with col2:
-                if st.button("📝", key=f"action_{threat['id']}", help="Take action"):
-                    st.session_state.selected_threat = threat
+                if st.button("📝", key=f"action_{threat['id']}_{idx}", help="Take action", use_container_width=True):
+                    # Store selected threat in session state as a dictionary (not Series)
+                    threat_dict = threat.to_dict()
+                    st.session_state.selected_threat = threat_dict
+                    st.rerun()
+        
+        # Show action modal if a threat was selected - FIXED CHECK
+        # Check if selected_threat is not None and not empty
+        if st.session_state.selected_threat is not None and st.session_state.selected_threat:
+            self._show_threat_action_modal(st.session_state.selected_threat)
+    
+    def _show_threat_action_modal(self, threat_dict):
+        """Show modal for taking action on a threat"""
+        # Create a modal using expander
+        with st.expander(f"⚡ Take Action: {threat_dict.get('id', 'Unknown')}", expanded=True):
+            st.markdown(f"### Threat Details: {threat_dict.get('id', 'Unknown')}")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f"**User:** {threat_dict.get('user', 'N/A')}")
+                st.markdown(f"**Department:** {threat_dict.get('department', 'N/A')}")
+                st.markdown(f"**Severity:** {threat_dict.get('severity', 'N/A')}")
+            
+            with col2:
+                st.markdown(f"**Action:** {threat_dict.get('action', 'N/A')}")
+                st.markdown(f"**Risk Score:** {threat_dict.get('risk_score', 'N/A')}")
+                st.markdown(f"**Status:** {threat_dict.get('status', 'N/A')}")
+            
+            # Action options
+            st.markdown("### 🔧 Available Actions")
+            
+            action = st.selectbox(
+                "Select Action",
+                ["Investigate", "Contain", "Resolve", "Escalate", "Send Alert", "Mark as False Positive"],
+                key=f"action_select_{threat_dict.get('id', 'unknown')}"
+            )
+            
+            notes = st.text_area("Notes", placeholder="Add investigation notes...", 
+                               key=f"notes_{threat_dict.get('id', 'unknown')}")
+            
+            col3, col4, col5 = st.columns(3)
+            
+            with col3:
+                if st.button("✅ Apply Action", use_container_width=True, 
+                           key=f"apply_{threat_dict.get('id', 'unknown')}"):
+                    # Update threat status in the dataframe
+                    df = st.session_state.threat_data
+                    mask = df['id'] == threat_dict.get('id')
+                    
+                    if action == "Resolve":
+                        df.loc[mask, 'status'] = "Resolved"
+                    elif action == "Contain":
+                        df.loc[mask, 'status'] = "Contained"
+                    elif action == "Investigate":
+                        df.loc[mask, 'status'] = "Investigating"
+                    elif action == "Mark as False Positive":
+                        df.loc[mask, 'status'] = "False Positive"
+                    
+                    st.session_state.threat_data = df
+                    
+                    # Add notification
+                    st.session_state.notifications.append({
+                        "id": len(st.session_state.notifications) + 1,
+                        "type": "info",
+                        "message": f"Action '{action}' applied to threat {threat_dict.get('id', 'Unknown')}",
+                        "time": "Just now"
+                    })
+                    
+                    # Clear selected threat
+                    st.session_state.selected_threat = None
+                    st.success(f"✅ Action '{action}' applied successfully!")
+                    st.rerun()
+            
+            with col4:
+                if st.button("📧 Send Alert", use_container_width=True, 
+                           key=f"alert_{threat_dict.get('id', 'unknown')}"):
+                    # Create alert email - FIXED: Ensure proper DataFrame creation
+                    try:
+                        # Convert threat_dict to DataFrame with proper structure
+                        alert_data = {
+                            'id': [threat_dict.get('id', 'Unknown')],
+                            'timestamp': [datetime.now().isoformat()],  # Current time for alert
+                            'user': [threat_dict.get('user', 'N/A')],
+                            'action': [threat_dict.get('action', 'N/A')],
+                            'severity': [threat_dict.get('severity', 'Critical')],  # Force Critical for alerts
+                            'department': [threat_dict.get('department', 'Security')],
+                            'risk_score': [threat_dict.get('risk_score', 95)],  # High score for alerts
+                            'status': ['Alert Sent'],
+                            'source_ip': [threat_dict.get('source_ip', '192.168.1.100')],
+                            'destination_ip': [threat_dict.get('destination_ip', '10.0.0.1')]
+                        }
+                        
+                        alert_df = pd.DataFrame(alert_data)
+                        
+                        # Send email alert
+                        result = send_immediate_alerts(alert_df)
+                        
+                        if result and result.get("success"):
+                            st.success("✅ Alert sent successfully!")
+                            
+                            # Update threat status to show alert was sent
+                            df = st.session_state.threat_data
+                            mask = df['id'] == threat_dict.get('id')
+                            df.loc[mask, 'status'] = "Alert Sent"
+                            st.session_state.threat_data = df
+                            
+                            # Add notification
+                            st.session_state.notifications.append({
+                                "id": len(st.session_state.notifications) + 1,
+                                "type": "info",
+                                "message": f"Alert sent for threat {threat_dict.get('id', 'Unknown')}",
+                                "time": "Just now"
+                            })
+                            
+                            # Log for debugging
+                            print(f"DEBUG: Alert sent for threat {threat_dict.get('id', 'Unknown')}")
+                            print(f"DEBUG: Result: {result}")
+                        else:
+                            error_msg = result.get('message', 'Unknown error') if result else 'No response from email function'
+                            st.error(f"❌ Failed to send alert: {error_msg}")
+                            
+                            # Add error notification
+                            st.session_state.notifications.append({
+                                "id": len(st.session_state.notifications) + 1,
+                                "type": "error",
+                                "message": f"Failed to send alert: {error_msg[:50]}",
+                                "time": "Just now"
+                            })
+                        
+                        # Refresh to show updated status
+                        st.rerun()
+                        
+                    except Exception as e:
+                        st.error(f"❌ Error creating alert: {str(e)}")
+                        print(f"DEBUG: Error in send alert: {str(e)}")
+            
+            with col5:
+                if st.button("❌ Cancel", use_container_width=True, 
+                           key=f"cancel_{threat_dict.get('id', 'unknown')}"):
+                    st.session_state.selected_threat = None
                     st.rerun()
     
     def create_threat_analysis_tab(self):
@@ -2141,18 +2333,19 @@ class InsiderThreatDashboard:
                 export_col1, export_col2, export_col3 = st.columns(3)
                 
                 with export_col1:
-                    if st.button("📥 Export CSV", use_container_width=True):
+                    if st.button("📥 Export CSV", use_container_width=True, key="export_csv_btn"):
                         csv = filtered_df.to_csv(index=False)
                         st.download_button(
                             label="Download CSV",
                             data=csv,
                             file_name=f"threats_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
                             mime="text/csv",
-                            use_container_width=True
+                            use_container_width=True,
+                            key="download_csv_btn"
                         )
                 
                 with export_col2:
-                    if st.button("📊 Quick Report", use_container_width=True):
+                    if st.button("📊 Quick Report", use_container_width=True, key="quick_report_btn"):
                         report_data = {
                             'metrics': [
                                 {'label': 'Total Threats', 'value': len(filtered_df)},
@@ -2173,11 +2366,12 @@ class InsiderThreatDashboard:
                             data=html_report,
                             file_name=f"threat_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
                             mime="text/html",
-                            use_container_width=True
+                            use_container_width=True,
+                            key="download_html_btn"
                         )
                 
                 with export_col3:
-                    if st.button("⭐ Save View", use_container_width=True):
+                    if st.button("⭐ Save View", use_container_width=True, key="save_view_btn"):
                         st.session_state.favorites.append({
                             'name': "My Threat View",
                             'filters': {
@@ -2196,14 +2390,14 @@ class InsiderThreatDashboard:
                 
                 with col1:
                     # Top users by threat count
-                    top_users = filtered_df['user'].value_counts().head(10).reset_index()
+                    top_users = filtered_df['user'].value_counts().head(10).resetindex()
                     top_users.columns = ['User', 'Threat Count']
                     st.write("**Top Users by Threat Count**")
                     st.dataframe(top_users, hide_index=True, use_container_width=True)
                 
                 with col2:
                     # Threat patterns
-                    threat_patterns = filtered_df['action'].value_counts().head(10).reset_index()
+                    threat_patterns = filtered_df['action'].value_counts().head(10).resetindex()
                     threat_patterns.columns = ['Threat Type', 'Count']
                     st.write("**Most Common Threat Types**")
                     st.dataframe(threat_patterns, hide_index=True, use_container_width=True)
@@ -2353,14 +2547,15 @@ class InsiderThreatDashboard:
                 horizontal=True
             )
             
-            if st.button("Generate Export", use_container_width=True):
+            if st.button("Generate Export", use_container_width=True, key="generate_export_btn"):
                 if export_format == "CSV":
                     csv = sysmon_df.to_csv(index=False)
                     st.download_button(
                         label="Download CSV",
                         data=csv,
                         file_name=f"sysmon_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                        mime="text/csv"
+                        mime="text/csv",
+                        key="export_csv_sysmon"
                     )
                 elif export_format == "JSON":
                     json_str = sysmon_df.to_json(orient='records', indent=2)
@@ -2368,7 +2563,8 @@ class InsiderThreatDashboard:
                         label="Download JSON",
                         data=json_str,
                         file_name=f"sysmon_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                        mime="application/json"
+                        mime="application/json",
+                        key="export_json_sysmon"
                     )
                 elif export_format == "Excel":
                     report_data = {
@@ -2387,7 +2583,8 @@ class InsiderThreatDashboard:
                                 label="Download Excel",
                                 data=f,
                                 file_name=f"sysmon_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
-                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                key="export_excel_sysmon"
                             )
                         # Clean up temp file
                         try:
@@ -2405,10 +2602,10 @@ class InsiderThreatDashboard:
             # Find IP columns
             ip_cols = [col for col in df.columns if 'ip' in col.lower()]
             if ip_cols:
-                selected_ip_col = st.selectbox("Select IP Column", ip_cols)
+                selected_ip_col = st.selectbox("Select IP Column", ip_cols, key="ip_col_select")
                 
                 # Top IPs
-                top_ips = df[selected_ip_col].value_counts().head(15).reset_index()
+                top_ips = df[selected_ip_col].value_counts().head(15).resetindex()
                 top_ips.columns = ['IP Address', 'Count']
                 
                 fig = px.bar(top_ips, x='Count', y='IP Address', orientation='h',
@@ -2423,10 +2620,10 @@ class InsiderThreatDashboard:
             # Port analysis if available
             port_cols = [col for col in df.columns if 'port' in col.lower()]
             if port_cols:
-                selected_port_col = st.selectbox("Select Port Column", port_cols)
+                selected_port_col = st.selectbox("Select Port Column", port_cols, key="port_col_select")
                 
                 # Port distribution
-                port_counts = df[selected_port_col].value_counts().head(10).reset_index()
+                port_counts = df[selected_port_col].value_counts().head(10).resetindex()
                 port_counts.columns = ['Port', 'Count']
                 
                 fig = px.pie(port_counts, values='Count', names='Port',
@@ -2441,13 +2638,13 @@ class InsiderThreatDashboard:
         process_cols = [col for col in df.columns if 'process' in col.lower() or 'image' in col.lower()]
         
         if process_cols:
-            selected_col = st.selectbox("Select Process Column", process_cols)
+            selected_col = st.selectbox("Select Process Column", process_cols, key="process_col_select")
             
             col1, col2 = st.columns(2)
             
             with col1:
                 # Top processes
-                top_processes = df[selected_col].value_counts().head(15).reset_index()
+                top_processes = df[selected_col].value_counts().head(15).resetindex()
                 top_processes.columns = ['Process', 'Count']
                 
                 fig = px.bar(top_processes, x='Count', y='Process', orientation='h',
@@ -2471,13 +2668,13 @@ class InsiderThreatDashboard:
         user_cols = [col for col in df.columns if 'user' in col.lower()]
         
         if user_cols:
-            selected_col = st.selectbox("Select User Column", user_cols)
+            selected_col = st.selectbox("Select User Column", user_cols, key="user_col_select")
             
             # User activity over time
             if 'timestamp' in df.columns:
                 try:
                     df['hour'] = pd.to_datetime(df['timestamp']).dt.hour
-                    user_activity = df.groupby([selected_col, 'hour']).size().reset_index()
+                    user_activity = df.groupby([selected_col, 'hour']).size().resetindex()
                     user_activity.columns = ['User', 'Hour', 'Activity']
                     
                     # Select top users
@@ -2492,7 +2689,7 @@ class InsiderThreatDashboard:
                     st.info("Could not analyze temporal patterns")
             
             # User statistics
-            user_stats = df[selected_col].value_counts().reset_index()
+            user_stats = df[selected_col].value_counts().resetindex()
             user_stats.columns = ['User', 'Activity Count']
             st.dataframe(user_stats.head(10), hide_index=True, use_container_width=True)
         else:
@@ -2537,27 +2734,38 @@ class InsiderThreatDashboard:
             st.success("✅ No suspicious patterns detected")
     
     def create_reports_tab(self):
-        """Create comprehensive report generation tab"""
+        """Create comprehensive report generation tab with functional buttons - FIXED MULTISELECT"""
         st.header("📋 ADVANCED REPORT GENERATION")
         
-        # Report Templates
+        # Handle report type selection
+        if st.session_state.report_type:
+            st.info(f"📋 Selected Report Type: {st.session_state.report_type.replace('_', ' ').title()}")
+        
+        # Report Templates with functional buttons
         st.subheader("📄 REPORT TEMPLATES")
         
         templates = st.columns(3)
         
         with templates[0]:
-            if st.button("🚨 Executive Summary", use_container_width=True):
-                st.session_state.report_type = "executive"
+            if st.button("🚨 Executive Summary", use_container_width=True, key="exec_summary_btn"):
+                st.session_state.report_type = "executive_summary"
+                st.success("✅ Executive Summary template selected!")
+                # Auto-fill form for executive summary
+                self._fill_report_form("executive")
                 st.rerun()
         
         with templates[1]:
-            if st.button("🔍 Detailed Analysis", use_container_width=True):
-                st.session_state.report_type = "detailed"
+            if st.button("🔍 Detailed Analysis", use_container_width=True, key="detailed_analysis_btn"):
+                st.session_state.report_type = "detailed_analysis"
+                st.success("✅ Detailed Analysis template selected!")
+                self._fill_report_form("detailed")
                 st.rerun()
         
         with templates[2]:
-            if st.button("📊 Compliance Report", use_container_width=True):
-                st.session_state.report_type = "compliance"
+            if st.button("📊 Compliance Report", use_container_width=True, key="compliance_report_btn"):
+                st.session_state.report_type = "compliance_report"
+                st.success("✅ Compliance Report template selected!")
+                self._fill_report_form("compliance")
                 st.rerun()
         
         # Report Configuration
@@ -2569,32 +2777,52 @@ class InsiderThreatDashboard:
             report_title = st.text_input(
                 "Report Title",
                 value="Threat Intelligence Report",
-                help="Enter a title for your report"
+                help="Enter a title for your report",
+                key="report_title_input"
             )
             
             report_period = st.selectbox(
                 "Report Period",
                 ["Last 24 Hours", "Last 7 Days", "Last 30 Days", "Custom Range"],
-                help="Select the time period for the report"
+                help="Select the time period for the report",
+                key="report_period_select"
             )
             
             if report_period == "Custom Range":
-                start_date = st.date_input("Start Date")
-                end_date = st.date_input("End Date")
+                start_date = st.date_input("Start Date", key="start_date_input")
+                end_date = st.date_input("End Date", key="end_date_input")
         
         with col2:
             report_format = st.selectbox(
                 "Report Format",
                 ["HTML", "Excel"],
-                help="Select output format"
+                help="Select output format",
+                key="report_format_select"
             )
+            
+            # FIXED MULTISELECT: Define available sections
+            available_sections = ["Executive Summary", "Threat Analysis", "Risk Assessment", 
+                                 "Recommendations", "Appendix", "Charts & Graphs"]
+            
+            # Set default based on report type
+            if st.session_state.report_type == "executive_summary":
+                default_sections = ["Executive Summary", "Threat Analysis", "Recommendations"]
+            elif st.session_state.report_type == "detailed_analysis":
+                default_sections = ["Executive Summary", "Threat Analysis", "Risk Assessment", "Recommendations", "Appendix"]
+            elif st.session_state.report_type == "compliance_report":
+                default_sections = ["Executive Summary", "Threat Analysis", "Recommendations"]
+            else:
+                default_sections = ["Executive Summary", "Threat Analysis", "Recommendations"]
+            
+            # Ensure defaults exist in available sections
+            valid_defaults = [section for section in default_sections if section in available_sections]
             
             include_sections = st.multiselect(
                 "Include Sections",
-                ["Executive Summary", "Threat Analysis", "Risk Assessment", 
-                 "Recommendations", "Appendix", "Charts & Graphs"],
-                default=["Executive Summary", "Threat Analysis", "Recommendations"],
-                help="Select sections to include in the report"
+                options=available_sections,
+                default=valid_defaults,
+                help="Select sections to include in the report",
+                key="include_sections_select"
             )
         
         # Advanced Options
@@ -2605,32 +2833,47 @@ class InsiderThreatDashboard:
                 confidentiality = st.selectbox(
                     "Confidentiality Level",
                     ["Internal Use", "Confidential", "Restricted"],
-                    help="Set report confidentiality level"
+                    help="Set report confidentiality level",
+                    key="confidentiality_select"
                 )
                 
                 auto_refresh = st.checkbox(
                     "Enable Auto-Refresh",
-                    help="Automatically update report data"
+                    help="Automatically update report data",
+                    key="auto_refresh_check"
                 )
             
             with col4:
                 branding = st.checkbox(
                     "Include Company Branding",
                     value=True,
-                    help="Add company logo and branding"
+                    help="Add company logo and branding",
+                    key="branding_check"
                 )
                 
                 timestamp = st.checkbox(
                     "Include Timestamp",
                     value=True,
-                    help="Add generation timestamp"
+                    help="Add generation timestamp",
+                    key="timestamp_check"
                 )
         
         # Generate Report Button
-        if st.button("🚀 GENERATE REPORT", use_container_width=True, type="primary"):
+        if st.button("🚀 GENERATE REPORT", use_container_width=True, type="primary", key="generate_report_btn"):
             with st.spinner("Generating report..."):
                 # Prepare report data
                 df = st.session_state.threat_data
+                
+                # Determine content based on report type
+                if st.session_state.report_type == "executive_summary":
+                    report_title = "Executive Threat Summary"
+                    include_sections = ["Executive Summary", "Key Metrics", "Recommendations"]
+                elif st.session_state.report_type == "detailed_analysis":
+                    report_title = "Detailed Threat Analysis Report"
+                    include_sections = ["Executive Summary", "Threat Analysis", "Risk Assessment", "Recommendations", "Appendix"]
+                elif st.session_state.report_type == "compliance_report":
+                    report_title = "Security Compliance Report"
+                    include_sections = ["Executive Summary", "Compliance Status", "Findings", "Recommendations"]
                 
                 report_data = {
                     'title': report_title,
@@ -2674,11 +2917,12 @@ class InsiderThreatDashboard:
                             data=html_report,
                             file_name=f"{report_title.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
                             mime="text/html",
-                            use_container_width=True
+                            use_container_width=True,
+                            key="download_html_report_btn"
                         )
                     with col_d2:
                         # Preview
-                        if st.button("👁️ Preview", use_container_width=True):
+                        if st.button("👁️ Preview", use_container_width=True, key="preview_report_btn"):
                             with st.expander("Report Preview", expanded=True):
                                 st.markdown(html_report, unsafe_allow_html=True)
                 
@@ -2698,11 +2942,12 @@ class InsiderThreatDashboard:
                                         data=f,
                                         file_name=f"{report_title.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
                                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                        use_container_width=True
+                                        use_container_width=True,
+                                        key="download_excel_report_btn"
                                     )
                             with col_d2:
                                 # Show preview of data
-                                if st.button("📊 Preview Data", use_container_width=True):
+                                if st.button("📊 Preview Data", use_container_width=True, key="preview_data_btn"):
                                     with st.expander("Data Preview", expanded=True):
                                         st.dataframe(df.head(20))
                             
@@ -2724,6 +2969,8 @@ class InsiderThreatDashboard:
                 })
                 
                 st.success("✅ Report generated successfully!")
+                # Clear report type
+                st.session_state.report_type = None
         
         # Recent Reports
         if st.session_state.recent_reports:
@@ -2740,7 +2987,7 @@ class InsiderThreatDashboard:
                     st.write(format_icon)
                 with col3:
                     if st.button("📋", key=f"view_{i}", help="View Report Details"):
-                        st.session_state.selected_report = report
+                        st.info(f"Report: {report['title']}\nFormat: {report['format']}\nDate: {report['timestamp']}")
                 with col4:
                     if st.button("🗑️", key=f"delete_{i}", help="Delete Report"):
                         st.session_state.recent_reports.remove(report)
@@ -2770,12 +3017,38 @@ class InsiderThreatDashboard:
                 st.write("**Quick Actions**")
                 action_cols = st.columns(2)
                 with action_cols[0]:
-                    if st.button("🔄 Refresh", use_container_width=True):
+                    if st.button("🔄 Refresh", use_container_width=True, key="refresh_reports_btn"):
                         st.rerun()
                 with action_cols[1]:
-                    if st.button("🗑️ Clear All", use_container_width=True):
+                    if st.button("🗑️ Clear All", use_container_width=True, key="clear_reports_btn"):
                         st.session_state.recent_reports = []
                         st.rerun()
+    
+    def _fill_report_form(self, report_type):
+        """Auto-fill form based on report type - FIXED VERSION"""
+        import time
+        
+        # Store the report type in session state
+        st.session_state.report_type = report_type
+        
+        # Set form values based on report type
+        if report_type == "executive":
+            st.session_state.report_title_input = "Executive Threat Summary"
+            st.session_state.report_period_select = "Last 7 Days"
+            st.session_state.include_sections_select = ["Executive Summary", "Threat Analysis", "Recommendations"]
+            st.session_state.confidentiality_select = "Confidential"
+            
+        elif report_type == "detailed":
+            st.session_state.report_title_input = "Detailed Threat Analysis Report"
+            st.session_state.report_period_select = "Last 30 Days"
+            st.session_state.include_sections_select = ["Executive Summary", "Threat Analysis", "Risk Assessment", "Recommendations", "Appendix"]
+            st.session_state.confidentiality_select = "Internal Use"
+            
+        elif report_type == "compliance":
+            st.session_state.report_title_input = "Security Compliance Report"
+            st.session_state.report_period_select = "Last 30 Days"
+            st.session_state.include_sections_select = ["Executive Summary", "Threat Analysis", "Recommendations"]
+            st.session_state.confidentiality_select = "Restricted"
     
     def create_configuration_tab(self):
         """Create enhanced configuration tab"""
@@ -2793,38 +3066,43 @@ class InsiderThreatDashboard:
                 auth_method = st.selectbox(
                     "Authentication Method",
                     ["Local", "LDAP", "Active Directory", "SSO"],
-                    help="Select authentication method"
+                    help="Select authentication method",
+                    key="auth_method_select"
                 )
                 
                 session_timeout = st.slider(
                     "Session Timeout (minutes)",
                     15, 240, 60,
-                    help="Set session timeout duration"
+                    help="Set session timeout duration",
+                    key="session_timeout_slider"
                 )
                 
                 enable_mfa = st.checkbox(
                     "Enable Multi-Factor Authentication",
                     value=True,
-                    help="Require MFA for login"
+                    help="Require MFA for login",
+                    key="enable_mfa_check"
                 )
             
             with col2:
                 password_policy = st.selectbox(
                     "Password Policy",
                     ["Basic", "Standard", "Strict", "Custom"],
-                    help="Set password complexity requirements"
+                    help="Set password complexity requirements",
+                    key="password_policy_select"
                 )
                 
                 if password_policy == "Custom":
-                    min_length = st.number_input("Minimum Length", 8, 20, 12)
-                    require_special = st.checkbox("Require Special Characters", True)
-                    require_numbers = st.checkbox("Require Numbers", True)
-                    require_uppercase = st.checkbox("Require Uppercase", True)
+                    min_length = st.number_input("Minimum Length", 8, 20, 12, key="min_length_input")
+                    require_special = st.checkbox("Require Special Characters", True, key="require_special_check")
+                    require_numbers = st.checkbox("Require Numbers", True, key="require_numbers_check")
+                    require_uppercase = st.checkbox("Require Uppercase", True, key="require_uppercase_check")
                 
                 audit_logging = st.checkbox(
                     "Enable Audit Logging",
                     value=True,
-                    help="Log all configuration changes"
+                    help="Log all configuration changes",
+                    key="audit_logging_check"
                 )
         
         with config_tabs[1]:
@@ -2836,19 +3114,22 @@ class InsiderThreatDashboard:
                 theme = st.selectbox(
                     "Theme",
                     ["Cyber (Default)", "Dark", "Light", "High Contrast"],
-                    help="Select dashboard theme"
+                    help="Select dashboard theme",
+                    key="theme_select"
                 )
                 
                 refresh_rate = st.selectbox(
                     "Auto-Refresh Rate",
                     ["None", "30 seconds", "1 minute", "5 minutes", "15 minutes"],
-                    help="Set automatic data refresh rate"
+                    help="Set automatic data refresh rate",
+                    key="refresh_rate_select"
                 )
                 
                 default_view = st.selectbox(
                     "Default View",
                     ["Dashboard", "Threat Analysis", "Reports"],
-                    help="Set default landing page"
+                    help="Set default landing page",
+                    key="default_view_select"
                 )
             
             with col2:
@@ -2856,19 +3137,22 @@ class InsiderThreatDashboard:
                     "Chart Quality",
                     options=["Low", "Medium", "High", "Ultra"],
                     value="High",
-                    help="Set chart rendering quality"
+                    help="Set chart rendering quality",
+                    key="chart_quality_slider"
                 )
                 
                 data_points = st.slider(
                     "Max Data Points",
                     100, 10000, 1000,
-                    help="Maximum data points to display"
+                    help="Maximum data points to display",
+                    key="data_points_slider"
                 )
                 
                 tooltips = st.checkbox(
                     "Show Tooltips",
                     value=True,
-                    help="Display tooltips on hover"
+                    help="Display tooltips on hover",
+                    key="tooltips_check"
                 )
         
         with config_tabs[2]:
@@ -2880,19 +3164,22 @@ class InsiderThreatDashboard:
                 email_notifications = st.checkbox(
                     "Email Notifications",
                     value=True,
-                    help="Send notifications via email"
+                    help="Send notifications via email",
+                    key="email_notifications_check"
                 )
                 
                 if email_notifications:
                     email_frequency = st.selectbox(
                         "Email Frequency",
-                        ["Immediate", "Hourly Digest", "Daily Digest", "Weekly Digest"]
+                        ["Immediate", "Hourly Digest", "Daily Digest", "Weekly Digest"],
+                        key="email_frequency_select"
                     )
                 
                 slack_integration = st.checkbox(
                     "Slack Integration",
                     value=False,
-                    help="Send notifications to Slack"
+                    help="Send notifications to Slack",
+                    key="slack_integration_check"
                 )
             
             with col2:
@@ -2900,13 +3187,15 @@ class InsiderThreatDashboard:
                     "Alert Levels to Notify",
                     ["Critical", "High", "Medium", "Low"],
                     default=["Critical", "High"],
-                    help="Select which alert levels trigger notifications"
+                    help="Select which alert levels trigger notifications",
+                    key="alert_levels_select"
                 )
                 
                 push_notifications = st.checkbox(
                     "Push Notifications",
                     value=True,
-                    help="Enable browser push notifications"
+                    help="Enable browser push notifications",
+                    key="push_notifications_check"
                 )
         
         with config_tabs[3]:
@@ -2915,7 +3204,8 @@ class InsiderThreatDashboard:
             db_enabled = st.toggle(
                 "Enable PostgreSQL Storage",
                 value=DB_CONFIG["enabled"],
-                help="Store threats in PostgreSQL database"
+                help="Store threats in PostgreSQL database",
+                key="db_enabled_toggle"
             )
             
             if db_enabled:
@@ -2925,30 +3215,34 @@ class InsiderThreatDashboard:
                     connection_string = st.text_input(
                         "Connection String",
                         value=DB_CONFIG["connection_string"],
-                        help="PostgreSQL connection string"
+                        help="PostgreSQL connection string",
+                        key="connection_string_input"
                     )
                     
                     backup_frequency = st.selectbox(
                         "Backup Frequency",
                         ["Daily", "Weekly", "Monthly", "Manual"],
-                        help="Set database backup schedule"
+                        help="Set database backup schedule",
+                        key="backup_frequency_select"
                     )
                 
                 with col2:
                     retention_days = st.number_input(
                         "Data Retention (days)",
                         30, 365*5, 365,
-                        help="Days to retain data before archiving"
+                        help="Days to retain data before archiving",
+                        key="retention_days_input"
                     )
                     
                     max_connections = st.number_input(
                         "Max Connections",
                         5, 100, 20,
-                        help="Maximum database connections"
+                        help="Maximum database connections",
+                        key="max_connections_input"
                     )
                 
                 # Test Connection
-                if st.button("🔗 Test Database Connection", use_container_width=True):
+                if st.button("🔗 Test Database Connection", use_container_width=True, key="test_db_conn_btn"):
                     try:
                         import psycopg2
                         conn = psycopg2.connect(connection_string)
@@ -2971,30 +3265,30 @@ class InsiderThreatDashboard:
                 {"name": "auditor", "role": "Auditor", "status": "Inactive"}
             ]
             
-            for user in users:
+            for i, user in enumerate(users):
                 col1, col2, col3 = st.columns([3, 2, 1])
                 with col1:
                     st.write(f"👤 {user['name']}")
                 with col2:
                     st.caption(f"{user['role']} | {user['status']}")
                 with col3:
-                    st.button("✏️", key=f"edit_{user['name']}", help="Edit User")
+                    st.button("✏️", key=f"edit_{user['name']}_{i}", help="Edit User")
             
             # Add New User
             with st.expander("➕ ADD NEW USER"):
                 new_user_cols = st.columns(2)
                 
                 with new_user_cols[0]:
-                    new_username = st.text_input("Username")
-                    new_email = st.text_input("Email")
-                    new_department = st.selectbox("Department", ENTERPRISE_CONFIG["departments"])
+                    new_username = st.text_input("Username", key="new_username_input")
+                    new_email = st.text_input("Email", key="new_email_input")
+                    new_department = st.selectbox("Department", ENTERPRISE_CONFIG["departments"], key="new_department_select")
                 
                 with new_user_cols[1]:
-                    new_role = st.selectbox("Role", ["Viewer", "Analyst", "Administrator", "Auditor"])
-                    new_status = st.selectbox("Status", ["Active", "Inactive", "Pending"])
-                    send_invite = st.checkbox("Send Invitation Email")
+                    new_role = st.selectbox("Role", ["Viewer", "Analyst", "Administrator", "Auditor"], key="new_role_select")
+                    new_status = st.selectbox("Status", ["Active", "Inactive", "Pending"], key="new_status_select")
+                    send_invite = st.checkbox("Send Invitation Email", key="send_invite_check")
                 
-                if st.button("Create User", use_container_width=True):
+                if st.button("Create User", use_container_width=True, key="create_user_btn"):
                     st.success(f"User '{new_username}' created successfully!")
         
         # Save Configuration
@@ -3002,7 +3296,7 @@ class InsiderThreatDashboard:
         col1, col2 = st.columns(2)
         
         with col1:
-            if st.button("💾 Save Configuration", use_container_width=True, type="primary"):
+            if st.button("💾 Save Configuration", use_container_width=True, type="primary", key="save_config_btn"):
                 # Update global DB_CONFIG
                 import sys
                 current_module = sys.modules[__name__]
@@ -3020,7 +3314,7 @@ class InsiderThreatDashboard:
                 })
         
         with col2:
-            if st.button("🔄 Reset to Defaults", use_container_width=True, type="secondary"):
+            if st.button("🔄 Reset to Defaults", use_container_width=True, type="secondary", key="reset_config_btn"):
                 st.session_state.notifications.append({
                     "id": len(st.session_state.notifications) + 1,
                     "type": "warning",
